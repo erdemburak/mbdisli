@@ -94,7 +94,7 @@ function Home() {
         >
           <SwiperSlide className="bg-gradient-to-r from-primary-600 to-primary-800 relative">
             <motion.img
-              src="/banner2.png"
+              src="https://i.imgur.com/B2zwIIW.png"
               alt="Banner Image"
               className="absolute left-0 top-0 w-full h-full opacity-20 hidden md:block object-cover"
               initial={{ opacity: 0, x: -60 }}

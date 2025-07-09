@@ -5,9 +5,9 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-lg font-semibold mb-4 text-white">İletişim</h3>
-            <p className="text-gray-400">Adres: [Şirket Adresi]</p>
-            <p className="text-gray-400">Telefon: [Telefon Numarası]</p>
-            <p className="text-gray-400">E-posta: [E-posta Adresi]</p>
+            <p className="text-gray-400">Adres: İvedik OSB Mah. 1448 Sok. No:39 Yenimahalle / Ankara</p>
+            <p className="text-gray-400">Telefon: +90 532 768 78 66</p>
+            <p className="text-gray-400">E-posta: mbdisli06@gmail.com</p>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4 text-white">Hızlı Bağlantılar</h3>
@@ -15,12 +15,13 @@ function Footer() {
               <li><a href="/" className="text-gray-400 hover:text-white transition-colors">Ana Sayfa</a></li>
               <li><a href="/products" className="text-gray-400 hover:text-white transition-colors">Ürünler</a></li>
               <li><a href="/about" className="text-gray-400 hover:text-white transition-colors">Hakkımızda</a></li>
+              <li><a href="/contact" className="text-gray-400 hover:text-white transition-colors">İletişim</a></li>
             </ul>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4 text-white">Çalışma Saatleri</h3>
-            <p className="text-gray-400">Pazartesi - Cuma: 09:00 - 18:00</p>
-            <p className="text-gray-400">Cumartesi: 09:00 - 13:00</p>
+            <p className="text-gray-400">Pazartesi - Cuma: 08:00 - 18:00</p>
+            <p className="text-gray-400">Cumartesi: 08:00 - 17:00</p>
             <p className="text-gray-400">Pazar: Kapalı</p>
           </div>
         </div>

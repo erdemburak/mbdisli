@@ -7,71 +7,93 @@ import { useLanguage, translations } from '../context/LanguageContext';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'swiper/css/pagination';
+import { useEffect, useState } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 
 function Home() {
   const { language } = useLanguage();
   const t = translations[language];
 
+  const [categories, setCategories] = useState([]);
+  const [catLoading, setCatLoading] = useState(true);
+  const [catError, setCatError] = useState('');
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setCatLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, 'adminCategories'));
+        setCategories(querySnapshot.docs.map(doc => doc.data().name));
+      } catch (err) {
+        setCatError('Kategoriler yüklenemedi');
+      } finally {
+        setCatLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const featuredProducts = [
     {
       id: 1,
-      title: language === 'tr' ? "Dişli Yedek Parçalar" : "Gear Spare Parts",
+      title: language === 'tr' ? 'Fellow' : 'Fellow',
       description: language === 'tr' 
-        ? "Yüksek kaliteli dişli yedek parçaları ve aksesuarlar"
-        : "High quality gear spare parts and accessories",
-      image: "/images/gear-parts.jpg",
+        ? 'Yüksek performanslı Fellow dişli makineleri ve yedek parçaları'
+        : 'High performance Fellow gear machines and spare parts',
+      image: '/images/fellow.jpg',
       icon: <FaCog className="w-12 h-12 text-primary-600" />,
-      category: "Dişli Yedek Parçalar"
+      category: 'Fellow'
     },
     {
       id: 2,
-      title: language === 'tr' ? "Universal Makinalar" : "Universal Machines",
+      title: language === 'tr' ? 'Freze' : 'Milling',
       description: language === 'tr'
-        ? "İkinci el universal makina ve ekipmanlar"
-        : "Second-hand universal machines and equipment",
-      image: "/images/universal-machines.jpg",
-      icon: <FaIndustry className="w-12 h-12 text-primary-600" />,
-      category: "Universal Makinalar"
+        ? 'Endüstriyel freze makineleri ve takımları'
+        : 'Industrial milling machines and tools',
+      image: '/images/milling.jpg',
+      icon: <FaTools className="w-12 h-12 text-primary-600" />,
+      category: 'Freze'
     },
     {
       id: 3,
-      title: language === 'tr' ? "Dişli Makinaları" : "Gear Machines",
+      title: language === 'tr' ? 'Azdırma' : 'Hobbing',
       description: language === 'tr'
-        ? "Modern dişli üretim ve işleme makineleri"
-        : "Modern gear manufacturing and processing machines",
-      image: "/images/gear-machines.jpg",
-      icon: <FaTools className="w-12 h-12 text-primary-600" />,
-      category: "Dişli Makinaları"
+        ? 'Yüksek hassasiyetli azdırma makineleri ve ekipmanları'
+        : 'High precision hobbing machines and equipment',
+      image: '/images/hobbing-machines.jpg',
+      icon: <FaHammer className="w-12 h-12 text-primary-600" />,
+      category: 'Azdırma'
     },
     {
       id: 4,
-      title: language === 'tr' ? "Azdırma Makinaları" : "Hobbing Machines",
+      title: language === 'tr' ? 'Cnc' : 'CNC',
       description: language === 'tr'
-        ? "Yüksek hassasiyetli azdırma makineleri"
-        : "High precision hobbing machines",
-      image: "/images/hobbing-machines.jpg",
-      icon: <FaHammer className="w-12 h-12 text-primary-600" />,
-      category: "Azdırma Makinaları"
+        ? 'Modern CNC makineleri ve otomasyon çözümleri'
+        : 'Modern CNC machines and automation solutions',
+      image: '/images/cnc.jpg',
+      icon: <FaTools className="w-12 h-12 text-primary-600" />,
+      category: 'Cnc'
     },
     {
       id: 5,
-      title: language === 'tr' ? "Fellow" : "Fellow",
+      title: language === 'tr' ? 'Planya' : 'Planer',
       description: language === 'tr'
-        ? "Yüksek performanslı fellow ürünleri"
-        : "High performance fellow products",
-      image: "/images/fellow.jpg",
-      icon: <FaCog className="w-12 h-12 text-primary-600" />,
-      category: "Fellow"
+        ? 'Endüstriyel planya makineleri ve aksesuarları'
+        : 'Industrial planer machines and accessories',
+      image: '/images/planer.jpg',
+      icon: <FaHammer className="w-12 h-12 text-primary-600" />,
+      category: 'Planya'
     },
     {
       id: 6,
-      title: language === 'tr' ? "Raspa Çakıları" : "Scraping Blades",
+      title: language === 'tr' ? 'Universal Tezgahlar' : 'Universal Machines',
       description: language === 'tr'
-        ? "Yüksek performanslı raspa çakıları"
-        : "High performance scraping blades",
-      image: "/images/scraping-blades.jpg",
-      icon: <FaCog className="w-12 h-12 text-primary-600" />,
-      category: "Raspa Çakıları"
+        ? 'Çeşitli universal tezgahlar ve çok amaçlı makineler'
+        : 'Various universal machines and multi-purpose equipment',
+      image: '/images/universal-machines.jpg',
+      icon: <FaIndustry className="w-12 h-12 text-primary-600" />,
+      category: 'Universal Tezgahlar'
     }
   ];
 

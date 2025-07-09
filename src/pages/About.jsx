@@ -81,30 +81,22 @@ function About() {
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           {language === 'tr'
             ? 'Dişli ve makine sektöründe 20 yılı aşkın tecrübemiz ile müşterilerimize en iyi hizmeti sunuyoruz'
-            : 'We provide the best service to our customers with over 20 years of experience in the gear and machine industry'}
+            : 'With over 20 years of experience in the gear and machinery sector, we strive to provide the best service to our customers.'}
         </p>
       </motion.div>
 
-      {/* Company History */}
+      {/* Company About Us */}
       <motion.div
         className="bg-white rounded-xl shadow-lg p-8 mb-16"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-          {language === 'tr' ? 'Şirket Tarihçemiz' : 'Our Company History'}
-        </h2>
         <div className="prose max-w-none">
           <p className="text-gray-600 mb-4">
             {language === 'tr'
-              ? '2000 yılında kurulan şirketimiz, dişli ve makine sektöründe faaliyet göstermeye başladı. İlk yıllarımızda dişli yedek parça üretimi ile başlayan yolculuğumuz, zamanla universal makina alım satımı ve dişli makinaları üretimi ile genişledi.'
-              : 'Our company, founded in 2000, started operating in the gear and machine industry. Our journey, which started with gear spare parts production in our early years, expanded over time with universal machine trading and gear machine production.'}
-          </p>
-          <p className="text-gray-600">
-            {language === 'tr'
-              ? 'Bugün, sektörün önde gelen firmalarından biri olarak, müşterilerimize en kaliteli ürünleri ve hizmetleri sunmaya devam ediyoruz. Modern üretim tesislerimiz ve uzman kadromuz ile sektördeki yenilikleri yakından takip ediyor, müşterilerimizin ihtiyaçlarına en uygun çözümleri üretiyoruz.'
-              : 'Today, as one of the leading companies in the industry, we continue to provide our customers with the highest quality products and services. With our modern production facilities and expert staff, we closely follow the innovations in the industry and produce the most suitable solutions for our customers\' needs.'}
+              ? 'MB Dişli, makina imalatı ve dişli üretimi alanında kaliteli, güvenilir ve yenilikçi çözümler sunan bir makina imalat firmasıdır. Öte yandan, 20 yılı aşkın tecrübemizle müşterilerimize en iyi şartlarda, en yüksek kaliteyle hizmet sunmaya özen gösteriyoruz.'
+              : 'MB Disli is a machinery manufacturing company that provides high-quality, reliable, and innovative solutions in the field of machinery and gear production. With over 20 years of experience, we strive to offer our customers the best conditions and the highest quality service.'}
           </p>
         </div>
       </motion.div>
@@ -122,8 +114,8 @@ function About() {
           </h2>
           <p className="text-gray-600">
             {language === 'tr'
-              ? 'Dişli ve makine sektöründe global bir marka olmak, yenilikçi çözümlerle müşterilerimizin ihtiyaçlarını en iyi şekilde karşılamak ve sektörde öncü olmak.'
-              : 'To become a global brand in the gear and machine industry, to best meet our customers\' needs with innovative solutions, and to be a leader in the industry.'}
+              ? 'MB DİŞLİ olarak, ürün ve hizmet sunduğumuz sektördeki teknolojik gelişmelerde adından söz ettiren; müşterilerinin ve içinde bulunduğu toplumun hayatına değer katan; kurduğu çözüm ortaklıklarında performansıyla örnek gösterilen; sürdürülebilir gelişimi çalışma kültürü olarak benimseyen organizasyon yapısıyla tercih edilen bir şirket olmayı amaçlıyoruz.'
+              : 'As MB DISLI, our vision is to be a preferred company with an organizational structure that is recognized for its technological advancements in the sector, adds value to the lives of its customers and society, is exemplary in its partnerships with its performance, and adopts sustainable development as a working culture.'}
           </p>
         </motion.div>
         <motion.div
@@ -137,8 +129,8 @@ function About() {
           </h2>
           <p className="text-gray-600">
             {language === 'tr'
-              ? 'Müşterilerimize en kaliteli ürünleri ve hizmetleri sunmak, sektördeki yenilikleri takip ederek sürekli gelişim sağlamak ve çalışanlarımızın potansiyellerini en üst düzeyde kullanmalarına olanak tanımak.'
-              : 'To provide our customers with the highest quality products and services, to ensure continuous development by following innovations in the industry, and to enable our employees to use their potential at the highest level.'}
+              ? 'En kaliteli ürünü, en uygun fiyatla satmak, Kalite ve doğruluktan ödün vermeden büyümek, Müşteri memnuniyetini sürekli kılmak, Personelimizin eğitim seviyesini sürekli arttırmak'
+              : 'To sell the highest quality product at the most affordable price, to grow without compromising quality and integrity, to ensure continuous customer satisfaction, and to continuously improve the education level of our staff.'}
           </p>
         </motion.div>
       </div>

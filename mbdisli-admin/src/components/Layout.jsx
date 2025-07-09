@@ -46,6 +46,7 @@ export default function Layout() {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
     { text: 'Ürünler', icon: <InventoryIcon />, path: '/products' },
+    { text: 'Kategoriler', icon: <InventoryIcon />, path: '/categories' },
   ];
 
   const drawer = (

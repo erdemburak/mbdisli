@@ -29,7 +29,9 @@ function Contact() {
     {
       icon: <FaClock className="w-6 h-6 text-primary-600" />,
       title: language === 'tr' ? 'Çalışma Saatleri' : 'Working Hours',
-      content: language === 'tr' ? 'Pazartesi - Cumartesi: 09:00 - 18:00' : 'Monday - Saturday: 09:00 - 18:00'
+      content: language === 'tr'
+        ? 'Pazartesi - Cuma: 08:00 - 18:00\nCumartesi: 08:00 - 17:00\nPazar: Kapalı'
+        : 'Monday - Friday: 08:00 - 18:00\nSaturday: 08:00 - 17:00\nSunday: Closed'
     }
   ];
 
@@ -81,7 +83,7 @@ function Contact() {
                     </div>
                     <div>
                       <h3 className="text-base font-medium text-gray-900">{info.title}</h3>
-                      <p className="text-sm text-gray-600 mt-0.5">{info.content}</p>
+                      <p className="text-sm text-gray-600 mt-0.5" style={{ whiteSpace: 'pre-line' }}>{info.content}</p>
                     </div>
                   </motion.div>
                 ))}

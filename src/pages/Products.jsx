@@ -6,6 +6,122 @@ import { useLanguage } from '../context/LanguageContext';
 import { collection, getDocs, doc, setDoc, updateDoc, increment, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
+// Kart için ayrı bir bileşen
+function ProductCard({ product, language }) {
+  const [currentImage, setCurrentImage] = useState(0);
+  const images = Array.isArray(product.images) && product.images.length > 0 ? product.images : product.image ? [product.image] : [];
+  return (
+    <motion.div
+      key={product.id}
+      className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 relative group flex flex-col h-full"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* Product Image Gallery */}
+      <div className="relative h-44 overflow-hidden flex flex-col items-center justify-center">
+        {images.length > 0 ? (
+          <>
+            <img
+              src={images[currentImage]}
+              alt={product.name}
+              className="w-full h-44 object-cover rounded"
+            />
+            {/* Slider Controls */}
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={e => {e.stopPropagation(); setCurrentImage((currentImage - 1 + images.length) % images.length);}}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-xl flex items-center justify-center hover:bg-gray-100 transition-colors duration-150 border border-gray-200 focus:outline-none focus:ring-0 hidden group-hover:block"
+                  style={{zIndex:2, width:'36px', height:'36px'}}
+                  aria-label="Önceki görsel"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button
+                  onClick={e => {e.stopPropagation(); setCurrentImage((currentImage + 1) % images.length);}}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-xl flex items-center justify-center hover:bg-gray-100 transition-colors duration-150 border border-gray-200 focus:outline-none focus:ring-0 hidden group-hover:block"
+                  style={{zIndex:2, width:'36px', height:'36px'}}
+                  aria-label="Sonraki görsel"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700"><polyline points="9 6 15 12 9 18"></polyline></svg>
+                </button>
+                {/* Dot Indicators */}
+                <div className="flex gap-1 mt-2 absolute bottom-2 left-1/2 -translate-x-1/2">
+                  {images.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={`inline-block w-6 h-1 rounded-full cursor-pointer transition-all duration-200 ${currentImage === idx ? 'bg-primary-600' : 'bg-gray-300'}`}
+                      onClick={e => {e.stopPropagation(); setCurrentImage(idx);}}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-400 text-sm">
+              {language === 'tr' ? 'Görsel yok' : 'No image available'}
+            </span>
+          </div>
+        )}
+        {/* Category Badge */}
+        {product.category && (
+          <div className="absolute top-2 right-2 bg-primary-600 text-white px-2.5 py-1 rounded-full text-sm">
+            {product.category}
+          </div>
+        )}
+      </div>
+      {/* Product Info */}
+      <div className="flex-1 flex flex-col p-4">
+        {/* Product Details */}
+        <div className="space-y-1.5 mb-3">
+          <div className="flex items-center text-gray-900">
+            <span className="font-medium mr-2 text-sm">
+              {language === 'tr' ? 'Ürün:' : 'Product:'}
+            </span>
+            <span className="line-clamp-1 text-sm">{product.name}</span>
+          </div>
+          {product.brand && (
+            <div className="flex items-center text-gray-600 text-sm">
+              <span className="font-medium mr-2">
+                {language === 'tr' ? 'Marka:' : 'Brand:'}
+              </span>
+              {product.brand}
+            </div>
+          )}
+          {product.model && (
+            <div className="flex items-center text-gray-600 text-sm">
+              <span className="font-medium mr-2">
+                {language === 'tr' ? 'Model:' : 'Model:'}
+              </span>
+              {product.model}
+            </div>
+          )}
+          {product.condition && (
+            <div className="flex items-center text-gray-600 text-sm">
+              <span className="font-medium mr-2">
+                {language === 'tr' ? 'Durum:' : 'Condition:'}
+              </span>
+              {product.condition}
+            </div>
+          )}
+        </div>
+        {/* View Details Button */}
+        <div className="text-center mt-auto">
+          <Link
+            to={`/products/${product.id}`}
+            className="inline-block bg-primary-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-primary-700 transition-colors"
+          >
+            {language === 'tr' ? 'Detayları Gör' : 'View Details'}
+          </Link>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Products() {
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
@@ -13,6 +129,9 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  const [categories, setCategories] = useState([]);
+  const [catLoading, setCatLoading] = useState(true);
+  const [catError, setCatError] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -25,6 +144,21 @@ export default function Products() {
       handleCategoryClick(categoryFromUrl); // Burada sayaç da artırılıyor
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setCatLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, 'adminCategories'));
+        setCategories(querySnapshot.docs.map(doc => doc.data().name));
+      } catch (err) {
+        setCatError('Kategoriler yüklenemedi');
+      } finally {
+        setCatLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const fetchProducts = async () => {
     try {
@@ -40,57 +174,6 @@ export default function Products() {
       setLoading(false);
     }
   };
-
-  const categories = [
-    {
-      id: 'Dişli Yedek Parçalar',
-      icon: <FaCog className="w-8 h-8 text-primary-600" />,
-      title: language === 'tr' ? 'Dişli Yedek Parçalar' : 'Gear Spare Parts',
-      description: language === 'tr'
-        ? 'Yüksek kaliteli dişli yedek parçaları ve aksesuarlar'
-        : 'High quality gear spare parts and accessories'
-    },
-    {
-      id: 'Universal Makinalar',
-      icon: <FaIndustry className="w-8 h-8 text-primary-600" />,
-      title: language === 'tr' ? 'Universal Makinalar' : 'Universal Machines',
-      description: language === 'tr'
-        ? 'İkinci el universal makina ve ekipmanlar'
-        : 'Second-hand universal machines and equipment'
-    },
-    {
-      id: 'Dişli Makinaları',
-      icon: <FaTools className="w-8 h-8 text-primary-600" />,
-      title: language === 'tr' ? 'Dişli Makinaları' : 'Gear Machines',
-      description: language === 'tr'
-        ? 'Modern dişli üretim ve işleme makineleri'
-        : 'Modern gear manufacturing and processing machines'
-    },
-    {
-      id: 'Azdırma Makinaları',
-      icon: <FaHammer className="w-8 h-8 text-primary-600" />,
-      title: language === 'tr' ? 'Azdırma Makinaları' : 'Hobbing Machines',
-      description: language === 'tr'
-        ? 'Yüksek hassasiyetli azdırma makineleri'
-        : 'High precision hobbing machines'
-    },
-    {
-      id: 'Fellow',
-      icon: <FaCog className="w-8 h-8 text-primary-600" />,
-      title: language === 'tr' ? 'Fellow' : 'Fellow',
-      description: language === 'tr'
-        ? 'Yüksek performanslı fellow ürünleri'
-        : 'High performance fellow products'
-    },
-    {
-      id: 'Raspa Çakıları',
-      icon: <FaCog className="w-8 h-8 text-primary-600" />,
-      title: language === 'tr' ? 'Raspa Çakıları' : 'Scraping Blades',
-      description: language === 'tr'
-        ? 'Yüksek performanslı raspa çakıları'
-        : 'High performance scraping blades'
-    }
-  ];
 
   const filteredProducts = products.filter((product) => {
     const searchTermLower = searchTerm.toLowerCase();
@@ -108,19 +191,19 @@ export default function Products() {
 
   // Firestore'da kategori tıklama sayısını artıran fonksiyon
   const handleCategoryClick = async (categoryId) => {
-  setSelectedCategory(categoryId);
-  try {
-    const categoryRef = doc(db, 'categoryClicks', categoryId);
-    const categorySnap = await getDoc(categoryRef);
-    if (categorySnap.exists()) {
-      await updateDoc(categoryRef, { count: increment(1) });
-    } else {
-      await setDoc(categoryRef, { count: 1 });
+    setSelectedCategory(categoryId);
+    try {
+      const categoryRef = doc(db, 'categoryClicks', categoryId);
+      const categorySnap = await getDoc(categoryRef);
+      if (categorySnap.exists()) {
+        await updateDoc(categoryRef, { count: increment(1) });
+      } else {
+        await setDoc(categoryRef, { count: 1 });
+      }
+    } catch (error) {
+      console.error('Kategori tıklama sayısı güncellenemedi:', error); // BU KISMI GÖZLEMLE
     }
-  } catch (error) {
-    console.error('Kategori tıklama sayısı güncellenemedi:', error); // BU KISMI GÖZLEMLE
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -178,17 +261,19 @@ export default function Products() {
                   >
                     {language === 'tr' ? 'Tümü' : 'All'}
                   </button>
+                  {catLoading && <button disabled className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-400">Kategoriler yükleniyor...</button>}
+                  {catError && <button disabled className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 text-red-400">{catError}</button>}
                   {categories.map((category) => (
                     <button
-                      key={category.id}
-                      onClick={() => handleCategoryClick(category.id)}
+                      key={category}
+                      onClick={() => handleCategoryClick(category)}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        selectedCategory === category.id
+                        selectedCategory === category
                           ? 'bg-primary-600 text-white border border-primary-600'
                           : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:text-primary-600 hover:border-primary-200'
                       }`}
                     >
-                      {category.title}
+                      {category}
                     </button>
                   ))}
                 </div>
@@ -206,85 +291,9 @@ export default function Products() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
                 {filteredProducts.map((product, index) => (
-                  <motion.div
-                    key={product.id}
-                    className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                  >
-                    {/* Product Image */}
-                    <div className="relative h-44 overflow-hidden">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-400 text-sm">
-                            {language === 'tr' ? 'Görsel yok' : 'No image available'}
-                          </span>
-                        </div>
-                      )}
-                      {/* Category Badge */}
-                      {product.category && (
-                        <div className="absolute top-2 right-2 bg-primary-600 text-white px-2.5 py-1 rounded-full text-sm">
-                          {product.category}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="p-4">
-                      {/* Product Details */}
-                      <div className="space-y-1.5 mb-3">
-                        <div className="flex items-center text-gray-900">
-                          <span className="font-medium mr-2 text-sm">
-                            {language === 'tr' ? 'Ürün:' : 'Product:'}
-                          </span>
-                          <span className="line-clamp-1 text-sm">{product.name}</span>
-                        </div>
-                        {product.brand && (
-                          <div className="flex items-center text-gray-600 text-sm">
-                            <span className="font-medium mr-2">
-                              {language === 'tr' ? 'Marka:' : 'Brand:'}
-                            </span>
-                            {product.brand}
-                          </div>
-                        )}
-                        {product.model && (
-                          <div className="flex items-center text-gray-600 text-sm">
-                            <span className="font-medium mr-2">
-                              {language === 'tr' ? 'Model:' : 'Model:'}
-                            </span>
-                            {product.model}
-                          </div>
-                        )}
-                        {product.condition && (
-                          <div className="flex items-center text-gray-600 text-sm">
-                            <span className="font-medium mr-2">
-                              {language === 'tr' ? 'Durum:' : 'Condition:'}
-                            </span>
-                            {product.condition}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* View Details Button */}
-                      <div className="text-center">
-                        <Link
-                          to={`/products/${product.id}`}
-                          className="inline-block bg-primary-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-primary-700 transition-colors"
-                        >
-                          {language === 'tr' ? 'Detayları Gör' : 'View Details'}
-                        </Link>
-                      </div>
-                    </div>
-                  </motion.div>
+                  <ProductCard key={product.id} product={product} language={language} />
                 ))}
               </div>
             )}

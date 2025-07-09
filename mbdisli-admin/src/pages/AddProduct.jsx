@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -10,17 +10,8 @@ import {
   Alert,
   MenuItem,
 } from '@mui/material';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-
-const categories = [
-  'Dişli Yedek Parçalar',
-  'Universal Makinalar',
-  'Dişli Makinaları',
-  'Azdırma Makinaları',
-  'Fellow',
-  'Raspa Çakıları',
-];
 
 const conditions = [
   'Sıfır',
@@ -38,14 +29,53 @@ export default function AddProduct() {
     model: '',
     condition: '',
     description: '',
-    image: '',
+    images: [''],
   });
+  const [categories, setCategories] = useState([]);
+  const [catLoading, setCatLoading] = useState(true);
+  const [catError, setCatError] = useState('');
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setCatLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, 'adminCategories'));
+        setCategories(querySnapshot.docs.map(doc => doc.data().name));
+      } catch (err) {
+        setCatError('Kategoriler yüklenemedi');
+      } finally {
+        setCatLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleImageChange = (idx, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.map((img, i) => (i === idx ? value : img)),
+    }));
+  };
+
+  const handleAddImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, ''],
+    }));
+  };
+
+  const handleRemoveImage = (idx) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== idx),
     }));
   };
 
@@ -57,9 +87,10 @@ export default function AddProduct() {
     try {
       const productData = {
         ...formData,
+        images: formData.images.map((url) => url.trim()).filter((url) => url),
         createdAt: new Date(),
       };
-
+      delete productData.image;
       await addDoc(collection(db, 'products'), productData);
       navigate('/products');
     } catch (err) {
@@ -104,7 +135,10 @@ export default function AddProduct() {
               onChange={handleChange}
               required
               margin="normal"
+              disabled={catLoading || !!catError}
             >
+              {catLoading && <MenuItem disabled>Kategoriler yükleniyor...</MenuItem>}
+              {catError && <MenuItem disabled>{catError}</MenuItem>}
               {categories.map((category) => (
                 <MenuItem key={category} value={category}>
                   {category}
@@ -147,16 +181,31 @@ export default function AddProduct() {
               ))}
             </TextField>
 
-            <TextField
-              fullWidth
-              label="Görsel URL"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              margin="normal"
-              placeholder="https://example.com/image.jpg"
-              helperText="Ürün görselinin URL adresini girin"
-            />
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                Görsel URL'leri
+              </Typography>
+              {formData.images.map((img, idx) => (
+                <Box key={idx} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <TextField
+                    fullWidth
+                    label={`Görsel URL ${idx + 1}`}
+                    value={img}
+                    onChange={(e) => handleImageChange(idx, e.target.value)}
+                    margin="normal"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  {formData.images.length > 1 && (
+                    <Button onClick={() => handleRemoveImage(idx)} color="error" sx={{ ml: 1 }}>
+                      Sil
+                    </Button>
+                  )}
+                </Box>
+              ))}
+              <Button onClick={handleAddImage} variant="outlined" sx={{ mt: 1 }}>
+                + Görsel Ekle
+              </Button>
+            </Box>
 
             <TextField
               fullWidth

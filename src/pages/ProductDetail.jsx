@@ -12,6 +12,7 @@ function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
     fetchProduct();
@@ -121,9 +122,47 @@ function ProductDetail() {
       >
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="md:flex">
-            {/* Product Images */}
-            <div className="md:w-1/2">
-              {product.image ? (
+            {/* Product Images Gallery */}
+            <div className="md:w-1/2 flex flex-col items-center">
+              {Array.isArray(product.images) && product.images.length > 0 ? (
+                <div className="relative w-full h-96 flex flex-col items-center">
+                  <img
+                    src={product.images[currentImage]}
+                    alt={product.name}
+                    className="w-full h-96 object-cover rounded"
+                  />
+                  {product.images.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setCurrentImage((currentImage - 1 + product.images.length) % product.images.length)}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-xl flex items-center justify-center hover:bg-gray-100 transition-colors duration-150 border border-gray-200 focus:outline-none focus:ring-0"
+                        style={{zIndex:2, width:'44px', height:'44px'}}
+                        aria-label="Önceki görsel"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                      </button>
+                      <button
+                        onClick={() => setCurrentImage((currentImage + 1) % product.images.length)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-xl flex items-center justify-center hover:bg-gray-100 transition-colors duration-150 border border-gray-200 focus:outline-none focus:ring-0"
+                        style={{zIndex:2, width:'44px', height:'44px'}}
+                        aria-label="Sonraki görsel"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700"><polyline points="9 6 15 12 9 18"></polyline></svg>
+                      </button>
+                      {/* Dot Indicators */}
+                      <div className="flex gap-1 mt-4 absolute bottom-2 left-1/2 -translate-x-1/2">
+                        {product.images.map((_, idx) => (
+                          <span
+                            key={idx}
+                            className={`inline-block w-8 h-1 rounded-full cursor-pointer transition-all duration-200 ${currentImage === idx ? 'bg-primary-600' : 'bg-gray-300'}`}
+                            onClick={() => setCurrentImage(idx)}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : product.image ? (
                 <div className="relative h-96">
                   <img
                     src={product.image}

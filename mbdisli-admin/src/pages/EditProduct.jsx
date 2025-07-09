@@ -21,7 +21,7 @@ const conditions = [
 export default function EditProduct() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [loading, setLoading] = useState(true);
+  const [productLoading, setProductLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
@@ -43,6 +43,7 @@ export default function EditProduct() {
   }, [id]);
 
   const fetchProduct = async () => {
+    setProductLoading(true);
     try {
       const docRef = doc(db, 'products', id);
       const docSnap = await getDoc(docRef);
@@ -69,7 +70,7 @@ export default function EditProduct() {
       console.error('Error fetching product:', err);
       setError('Ürün yüklenirken bir hata oluştu');
     } finally {
-      setLoading(false);
+      setProductLoading(false);
     }
   };
 
@@ -136,7 +137,7 @@ export default function EditProduct() {
     }
   };
 
-  if (loading) {
+  if (productLoading || catLoading) {
     return (
       <Container>
         <Box sx={{ mt: 4 }}>
@@ -176,7 +177,7 @@ export default function EditProduct() {
               select
               label="Kategori"
               name="category"
-              value={formData.category}
+              value={formData.category || ""}
               onChange={handleChange}
               required
               margin="normal"
@@ -214,7 +215,7 @@ export default function EditProduct() {
               select
               label="Durum"
               name="condition"
-              value={formData.condition}
+              value={formData.condition || ""}
               onChange={handleChange}
               required
               margin="normal"

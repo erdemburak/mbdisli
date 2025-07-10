@@ -21,8 +21,11 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-primary-600">MB Dişli</span>
+            <Link to="/" className="flex-shrink-0 flex items-center" style={{ height: '100%' }}> 
+            <img src="/navbarlogo.png" alt="MB Dişli Logo" className="h-11" style={{ height: 44, marginRight: 4, display: 'block' }} /> 
+            <span className="text-2xl font-bold text-primary-600" style={{ display: 'flex', alignItems: 'center', height: '44px', position: 'relative', top: '-2px', }} > 
+              MB Dişli
+            </span>
             </Link>
           </div>
 
